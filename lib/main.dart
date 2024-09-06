@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         title: 'Namer App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 10, 21, 116)),
         ),
         home: MyHomePage(),
       ),
@@ -32,6 +32,17 @@ class MyAppState extends ChangeNotifier {
     current = WordPair.random();
     notifyListeners();
   }
+
+  var favorites = <WordPair>[];
+
+  void toggleFavorite() {
+    if (favorites.contains(current)) {
+      favorites.remove(current);
+    } else {
+      favorites.add(current);
+    }
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatelessWidget {
@@ -42,19 +53,24 @@ class MyHomePage extends StatelessWidget {
 
     
     return Scaffold(
-      body: Column(
-        children: [
-          Text('A random AWESOME idea'),
-          // Text(appState.current.asLowerCase),
-          BigCard(pair: pair),
-          // Button
-          ElevatedButton(
-            onPressed: () {
-              appState.getNext();
-            },
-            child: Text("Next"),
-          )
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            BigCard(pair: pair),
+            SizedBox(height: 20),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    appState.getNext();
+                  },
+                  child: Text("Next"),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -70,7 +86,23 @@ class BigCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(pair.asLowerCase);
+    final theme = Theme.of(context);
+
+    final style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
+
+    return Card(
+      color: theme.colorScheme.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Text(
+          pair.asLowerCase, 
+          style: style,
+          semanticsLabel: "${pair.first} ${pair.second}",
+          ),
+      ),
+    );
   }
 }
 
